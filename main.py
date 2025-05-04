@@ -8,12 +8,30 @@ import io
 from os import remove
 
 
+def load_store():
+    try:
+        with open("client_store.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def save_store(store):
+    with open("client_store.json", "w") as f:
+        json.dump(store, f)
+
 
 class LGTVClient(ctk.CTk):
     def __init__(self):
         super().__init__()
+        self.pointer_input = None
+        self.pointer_tab = None
+        self.tabview = None
+        self.system_tab = None
+        self.app_tab = None
+        self.media_tab = None
         self.title("LG TV Client")
-        self.geometry("800x600")
+        self.geometry("1200x600")
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
 
@@ -28,32 +46,18 @@ class LGTVClient(ctk.CTk):
         self.create_widgets()
         self.after(100, self.connect_to_tv)
 
-    def on_closing():
-        print("closing")
-
-    def load_store(self):
-        try:
-            with open("client_store.json") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}
-
-    def save_store(self, store):
-        with open("client_store.json", "w") as f:
-            json.dump(store, f)
-
     def connect_to_tv(self):
         try:
             ip_address = "192.168.1.14"  # Replace with your actual TV IP
             self.client = WebOSClient(ip_address)
-            store = self.load_store()
+            store = load_store()
             self.client.connect()
             for status in self.client.register(store):
                 if status == WebOSClient.PROMPTED:
                     print("Please accept the connection on the TV.")
                 elif status == WebOSClient.REGISTERED:
                     print("Registered successfully.")
-            self.save_store(store)
+            save_store(store)
 
             self.media = MediaControl(self.client)
             self.app_control = ApplicationControl(self.client)
