@@ -3,7 +3,7 @@ from pywebostv.connection import WebOSClient
 from pywebostv.controls import *
 import customtkinter as ctk
 import requests
-from PIL import Imag
+from PIL import Image
 import io
 from os import remove
 
